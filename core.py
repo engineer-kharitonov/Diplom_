@@ -1,4 +1,3 @@
-# import random
 from vk_api.utils import get_random_id
 
 
@@ -23,8 +22,7 @@ class VKtools:
             has_photo=1,
             is_closed=False,
             can_access_closed=True
-            )
-
+        )
         try:
             users = req['items']
         except KeyError:
@@ -56,9 +54,7 @@ class VKtools:
 
         return result_
 
-    # проверка keyboard
     def simple_message(self, message_text, peer_id, keyboard=None):
-        # проверяем значение keyboard. В зависимости от наполнения отправляем сообщение с клавиатурой или без
         if keyboard is not None:
             self.vk.messages.send(
                 peer_id=peer_id,

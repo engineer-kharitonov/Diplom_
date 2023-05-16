@@ -69,7 +69,8 @@ class CachedUsers(Base):
     bdate = Column(String)
     city = Column(String)
     user = relationship(User, back_populates='cached_users')
-    def __init__(self,user_id):
+
+    def __init__(self, user_id):
         self.user_id = user_id
 
 

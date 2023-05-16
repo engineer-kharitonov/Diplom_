@@ -21,7 +21,6 @@ db_session = Session()
 
 def state_manager(vk, user, user_text):
     keyboard = VkKeyboard(inline=True)
-
     vktools = VKtools(vk, None)
     if user.state == 'search_age_from':
         if not user_text.isdigit():
@@ -88,7 +87,6 @@ def state_manager(vk, user, user_text):
 
 def search_settings(vk, user, user_text):
     keyboard = VkKeyboard(inline=True)
-
     vktools = VKtools(vk, None)
     if user_text == 'настройки поиска':
 
@@ -111,11 +109,11 @@ def search_settings(vk, user, user_text):
         db_session.commit()
         vktools.simple_message('Введите название города', user.user_id)
 
-    elif user_text == 'cемейное положение':
+    elif user_text == 'семейное положение':
         user.state = 'search_status'
         db_session.commit()
-        vktools.simple_message('Семейное положение для поиска', user.user_id,
-                               keyboards.get_search_status_options_keyboard(keyboard).get_keyboard())
+        vktools.simple_message('Семейное положение для поиска',
+                               user.user_id, keyboards.get_search_status_options_keyboard(keyboard).get_keyboard())
 
 
 def user_search(vk, user, session):
@@ -126,9 +124,8 @@ def user_search(vk, user, session):
     viewed = [view.get() for view in user.user_views]
     filtered = [user for user in result if user['is_closed'] is False and user['id'] not in viewed]
 
-    # обновляем кеш в бд (удаляем старые записи)
     db_session.query(CachedUsers).filter(CachedUsers.user_id == user.user_id).delete()
-    # кешируем
+
     cached = []
 
     for to_cache in filtered:
@@ -140,12 +137,11 @@ def user_search(vk, user, session):
         cached_user.city = to_cache.get('city', {}).get('title')
         cached.append(cached_user)
 
-    # Сохраняем все объекты
     db_session.bulk_save_objects(cached)
     db_session.commit()
 
     var = random.choice(filtered)
-    message = f"{var['first_name']} {var['last_name']}, {var['bdate']}, {var.get('city',{}).get('title')}"
+    message = f"{var['first_name']} {var['last_name']}, {var['bdate']}, {var.get('city', {}).get('title')}"
 
     user.current_page = var['id']
 
@@ -165,7 +161,6 @@ def cached_users(vk, user, session):
     finder = VKtools(vk, session)
     keyboard = VkKeyboard(inline=True)
 
-    # получаем из кеша
     result = db_session.query(CachedUsers).filter(CachedUsers.user_id == user.user_id).all()
     viewed = [view.get() for view in user.user_views]
     filtered = [user for user in result if user.own_id not in viewed]
@@ -213,8 +208,10 @@ def main():
             if user.state != 'default':
                 state_manager(vk, user, user_text)
 
-            if user_text in ['start', 'старт', 'дальше', 'начать', 'поиск', 'начать поиск']:
+            if user_text in ['start', 'старт', 'начать', 'поиск', 'начать поиск']:
                 user_search(vk, user, session)
+            elif user_text == 'дальше':
+                cached_users(vk, user, session)
             elif user_text in ['настройки поиска', 'возраст', 'пол', 'семейное положение', 'город']:
                 search_settings(vk, user, user_text)
             elif user_text == 'посмотреть страницу':
