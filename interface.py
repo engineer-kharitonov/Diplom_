@@ -114,8 +114,8 @@ def search_settings(vk, user, user_text):
     elif user_text == 'cемейное положение':
         user.state = 'search_status'
         db_session.commit()
-        vktools.simple_message('Семейное положение для поиска',
-                               user.user_id, keyboards.get_search_status_options_keyboard(keyboard).get_keyboard())
+        vktools.simple_message('Семейное положение для поиска', user.user_id,
+                               keyboards.get_search_status_options_keyboard(keyboard).get_keyboard())
 
 
 def user_search(vk, user, session):
