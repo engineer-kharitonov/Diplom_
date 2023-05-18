@@ -11,8 +11,10 @@ class VKtools:
         print(user.search_city)
         print(user.search_age_from)
         print(user.search_age_to)
+        print(user.offset)
         req = self.session.users.search(
-            count=1000,
+            count=100,
+            offset=user.offset,
             fields=['photo_id', 'sex', 'bdate', 'city'],
             hometown=user.search_city,
             sex=user.search_sex,

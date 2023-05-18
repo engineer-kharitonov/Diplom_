@@ -30,7 +30,7 @@ class User(Base):
     search_sex = Column(Integer, default=0)
     search_city = Column(String, default=None)
     search_status = Column(Integer, default=6)
-
+    offset = Column(Integer, default=0)
     current_page = Column(String)
     user_views = relationship('Views', back_populates='user')
     cached_users = relationship('CachedUsers', back_populates='user')

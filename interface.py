@@ -121,8 +121,14 @@ def user_search(vk, user, session):
     keyboard = VkKeyboard(inline=True)
 
     result = finder.search(user)
+    user.offset = user.offset + 100
     viewed = [view.get() for view in user.user_views]
     filtered = [user for user in result if user['is_closed'] is False and user['id'] not in viewed]
+
+    print(filtered)
+    if not filtered:
+        finder.simple_message('Вы просмотрели всех пользователей. Измените фильтр чтобы найти новых', user.user_id)
+        return
 
     db_session.query(CachedUsers).filter(CachedUsers.user_id == user.user_id).delete()
 
@@ -214,6 +220,7 @@ def main():
                 cached_users(vk, user, session)
             elif user_text in ['настройки поиска', 'возраст', 'пол', 'семейное положение', 'город']:
                 search_settings(vk, user, user_text)
+                user.offset = 0
             elif user_text == 'посмотреть страницу':
                 vk.messages.send(
                     peer_id=user.user_id,
